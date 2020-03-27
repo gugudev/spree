@@ -1,5 +1,6 @@
 //= require jquery3
 //= require jquery_ujs
+//= require jquery.mask.min
 //= require popper
 //= require bootstrap
 //= require jquery.payment

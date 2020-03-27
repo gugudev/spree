@@ -79,6 +79,9 @@ module Spree
                   if order.payment_required? && order.payments.valid.empty?
                     order.errors.add(:base, Spree.t(:no_payment_found))
                     false
+                  elsif Spree::Config[:minimum_total_order] && order.total < Spree::Config[:minimum_total_order]
+                    order.errors.add(:base, Spree.t(:minimum_total_order, amount: ActionController::Base.helpers.number_to_currency(Spree::Config[:minimum_total_order])))
+                    false
                   elsif order.payment_required?
                     order.process_payments!
                   end
@@ -89,6 +92,7 @@ module Spree
               end
 
               before_transition from: :cart, do: :ensure_line_items_present
+              before_transition to: :payment, do: :ensure_default_user if Spree::Config[:default_system_user_id]
 
               if states[:address]
                 before_transition from: :address, do: :update_line_item_prices!
@@ -96,14 +100,14 @@ module Spree
                 before_transition to: :address, do: :assign_default_addresses!
               end
 
-              if states[:delivery]
-                before_transition to: :delivery, do: :create_proposed_shipments
-                before_transition to: :delivery, do: :ensure_available_shipping_rates
-                before_transition to: :delivery, do: :set_shipments_cost
-                before_transition to: :delivery, do: :create_shipment_tax_charge!
-                before_transition from: :delivery, do: :apply_free_shipping_promotions
-                before_transition to: :delivery, do: :apply_unassigned_promotions
-              end
+              # if states[:delivery]
+              #   before_transition to: :delivery, do: :create_proposed_shipments
+              #   before_transition to: :delivery, do: :ensure_available_shipping_rates
+              #   before_transition to: :delivery, do: :set_shipments_cost
+              #   before_transition to: :delivery, do: :create_shipment_tax_charge!
+              #   before_transition from: :delivery, do: :apply_free_shipping_promotions
+              #   before_transition to: :delivery, do: :apply_unassigned_promotions
+              # end
 
               before_transition to: :resumed, do: :ensure_line_item_variants_are_not_discontinued
               before_transition to: :resumed, do: :ensure_line_items_are_in_stock
@@ -244,6 +248,12 @@ module Spree
 
               if attributes[:payments_attributes]
                 attributes[:payments_attributes].first[:request_env] = request_env
+              end
+
+              if attributes[:bill_address_attributes] && Spree::Config[:default_system_user_id]
+                user_default = Spree::User.find(Spree::Config[:default_system_user_id])
+
+                attributes[:bill_address_attributes] = ActionController::Parameters.new(user_default.bill_address.dup.attributes.merge(attributes[:bill_address_attributes])).permit!
               end
 
               success = update(attributes)

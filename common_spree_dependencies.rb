@@ -13,7 +13,7 @@ platforms :jruby do
 end
 
 platforms :ruby do
-  gem 'mysql2'
+  # gem 'mysql2'
   gem 'pg', '~> 1.1'
 end
 

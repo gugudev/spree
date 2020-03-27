@@ -110,6 +110,10 @@ Spree.ready(function ($) {
         updateShippingFormState(orderUseBilling)
       })
       updateShippingFormState(orderUseBilling)
+
+      $('#order_bill_address_attributes_phone').mask('(00) 00000-0000', { clearIfNotMatch: true })
+      $('#order_bill_address_attributes_zipcode').mask('00000-000')
+
     }
     function updateShippingFormState (orderUseBilling) {
       if (orderUseBilling.is(':checked')) {

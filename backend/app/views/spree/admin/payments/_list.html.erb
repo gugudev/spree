@@ -3,7 +3,7 @@
     <tr data-hook="payments_header">
       <th><%= Spree::Payment.human_attribute_name(:number) %></th>
       <th><%= "#{Spree.t('date')}/#{Spree.t('time')}" %></th>
-      <th class="text-center"><%= Spree.t(:amount) %></th>
+      <th class="text-center"><%= Spree.t('spree/payment.amount') %></th>
       <th class="text-center"><%= Spree.t(:payment_method) %></th>
       <th class="text-center"><%= Spree.t(:transaction_id) %></th>
       <th class="text-center"><%= Spree.t(:payment_state) %></th>

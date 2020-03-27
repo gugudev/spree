@@ -62,6 +62,11 @@ module Spree
     preference :tax_using_ship_address, :boolean, default: true
     preference :track_inventory_levels, :boolean, default: true # Determines whether to track on_hand values for variants / products.
 
+    preference :minimum_total_order, :integer, default: nil
+    preference :default_system_user_id, :integer, default: nil
+
+    preference :default_link_contact_order, :string, default: nil
+
     # Store credits configurations
     preference :non_expiring_credit_types, :array, default: []
     preference :credit_to_new_allocation, :boolean, default: false

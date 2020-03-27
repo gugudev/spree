@@ -9,7 +9,7 @@ Handlebars.registerHelper('edit_product_url', function (productId) {
   return Spree.routes.edit_product(productId)
 })
 Handlebars.registerHelper('name_or_presentation', function (optionValue) {
-  if (optionValue.name === 'color') {
+  if (optionValue.name === 'cores') {
     return optionValue.name
   } else {
     return optionValue.presentation

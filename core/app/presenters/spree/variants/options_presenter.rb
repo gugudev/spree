@@ -33,7 +33,7 @@ module Spree
         end
       end
 
-      def present_color_option(option)
+      def present_cores_option(option)
         "#{option.option_type.presentation}: #{option.name}"
       end
 

@@ -50,6 +50,10 @@ module Spree
       true
     end
 
+    def link_description(order_number)
+      description.split('scriptlink')[1].gsub('RNPEDIDO', order_number)
+    end
+
     # Custom gateways should redefine this method. See Gateway implementation
     # as an example
     def reusable_sources(_order)

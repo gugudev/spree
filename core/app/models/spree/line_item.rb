@@ -65,7 +65,7 @@ module Spree
     alias single_display_amount display_price
 
     def amount
-      price * quantity
+      (price || 0) * quantity
     end
 
     alias subtotal amount

@@ -12,7 +12,8 @@ module Spree
 
     # we're not freezing this on purpose so developers can extend and manage
     # those attributes depending of the logic of their applications
-    ADDRESS_FIELDS = %w(firstname lastname company address1 address2 city state zipcode country phone)
+    # ADDRESS_FIELDS = %w(firstname lastname company address1 address2 city state zipcode country phone)
+    ADDRESS_FIELDS = %w(firstname phone address1 zipcode)
     EXCLUDED_KEYS_FOR_COMPARISION = %w(id updated_at created_at deleted_at user_id)
 
     belongs_to :country, class_name: 'Spree::Country'
@@ -24,8 +25,9 @@ module Spree
     before_validation :clear_invalid_state_entities, if: -> { country.present? }, on: :update
 
     with_options presence: true do
-      validates :firstname, :lastname, :address1, :city, :country
-      validates :zipcode, if: :require_zipcode?
+      # validates :firstname, :lastname, :address1, :city, :country
+      # validates :zipcode, if: :require_zipcode?
+      validates :firstname, :lastname, :city, :country
       validates :phone, if: :require_phone?
     end
 
@@ -140,6 +142,21 @@ module Spree
       else
         update_column :deleted_at, Time.current
       end
+    end
+
+    def different_from_user_default_address?
+      default_user = Spree::User.find(Spree::Config[:default_system_user_id]) if Spree::Config[:default_system_user_id]
+      address_different = false
+
+      if default_user && default_user.bill_address
+
+        address_different = 
+          (self.address1 && self.address1 != default_user.bill_address.address1) || 
+          (self.zipcode && self.zipcode != default_user.bill_address.zipcode)
+
+      end
+
+      default_user && address_different
     end
 
     private

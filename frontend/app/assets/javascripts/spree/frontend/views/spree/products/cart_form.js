@@ -33,8 +33,12 @@ function CartForm($, $cartForm) {
 
   this.initializeForm = function() {
     if (this.withOptionValues) {
-      var $optionValue = this.firstCheckedOptionValue()
-      this.applyCheckedOptionValue($optionValue, true)
+
+      var applyChecked = this.applyCheckedOptionValue
+      this.uniquenessOptionValues().each(function(index, option) {
+        applyChecked($(this), true)
+      })
+
     } else {
       this.updateAddToCart()
       this.triggerVariantImages()
@@ -50,6 +54,7 @@ function CartForm($, $cartForm) {
   }.bind(this)
 
   this.applyCheckedOptionValue = function($optionValue, initialUpdate) {
+    // debugger
     this.saveCheckedOptionValue($optionValue)
     this.showAvailableVariants()
     this.updateAddToCart()
@@ -118,6 +123,10 @@ function CartForm($, $cartForm) {
 
   this.firstCheckedOptionValue = function() {
     return $cartForm.find(OPTION_VALUE_SELECTOR + '[data-option-type-index=0]' + ':checked')
+  }
+
+  this.uniquenessOptionValues = function() {
+    return $cartForm.find(OPTION_VALUE_SELECTOR + '[data-is-unique=true]')
   }
 
   this.shouldTriggerVariantImage = function($optionValue) {

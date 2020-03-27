@@ -27,6 +27,7 @@ module Spree
     alias display_ship_total display_shipment_total
     alias_attribute :ship_total, :shipment_total
 
+    MIMIMUM_TOTAL_PRICE = 5
     MONEY_THRESHOLD  = 100_000_000
     MONEY_VALIDATION = {
       presence: true,
@@ -38,6 +39,17 @@ module Spree
       format: { with: /\A-?\d+(?:\.\d{1,2})?\z/, allow_blank: true }
     }.freeze
 
+    TOTAL_VALIDATION = {
+      presence: true,
+      numericality: {
+        greater_than: 5,
+        less_than: MONEY_THRESHOLD,
+        allow_blank: true
+      },
+      format: { with: /\A-?\d+(?:\.\d{1,2})?\z/, allow_blank: true }
+    }.freeze
+
+
     POSITIVE_MONEY_VALIDATION = MONEY_VALIDATION.deep_dup.tap do |validation|
       validation.fetch(:numericality)[:greater_than_or_equal_to] = 0
     end.freeze
@@ -48,7 +60,7 @@ module Spree
 
     checkout_flow do
       go_to_state :address
-      go_to_state :delivery
+      # go_to_state :delivery
       go_to_state :payment, if: ->(order) { order.payment? || order.payment_required? }
       go_to_state :confirm, if: ->(order) { order.confirmation_required? }
       go_to_state :complete
@@ -254,6 +266,7 @@ module Spree
       self.user           = user
       self.email          = user.email if override_email
       self.created_by   ||= user
+
       self.bill_address ||= user.bill_address.try(:clone)
       self.ship_address ||= user.ship_address.try(:clone)
 
@@ -649,13 +662,19 @@ module Spree
 
     # Determine if email is required (we don't want validation errors before we hit the checkout)
     def require_email
-      true unless new_record? || ['cart', 'address'].include?(state)
+      # true unless new_record? || ['cart', 'address'].include?(state)
+      false
     end
 
     def ensure_line_items_present
       unless line_items.present?
         errors.add(:base, Spree.t(:there_are_no_items_for_this_order)) && (return false)
       end
+    end
+
+    def ensure_default_user
+      user = Spree::User.find(Spree::Config[:default_system_user_id])
+      self.associate_user!(user)
     end
 
     def ensure_available_shipping_rates

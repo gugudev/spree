@@ -32,14 +32,15 @@
       </li>
     <% end %>
 
-    <% if can? :update, @order %>
-      <li data-hook='admin_order_tabs_shipment_details'>
-        <%= link_to_with_icon 'road',
+    <%# if can? :update, @order %>
+      <!-- <li data-hook='admin_order_tabs_shipment_details'>
+        <%#= link_to_with_icon 'road',
           Spree.t(:shipments),
           edit_admin_order_url(@order),
           class: "#{'active' if current == :shipments} nav-link" %>
       </li>
-    <% end %>
+      -->
+    <%# end %>
 
     <% if can? :index, Spree::Adjustment %>
       <li data-hook='admin_order_tabs_adjustments'>

@@ -19,6 +19,9 @@ module Spree
                  else
                    controller_name.to_sym
                  end
+
+        # byebug
+
         authorize! :admin, record
         authorize! action, record
       end

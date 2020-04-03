@@ -92,6 +92,7 @@ module Spree
               end
 
               before_transition from: :cart, do: :ensure_line_items_present
+              before_transition to: :payment, do: :mark_ordered_completed
               before_transition to: :payment, do: :ensure_default_user if Spree::Config[:default_system_user_id]
 
               if states[:address]
@@ -107,6 +108,10 @@ module Spree
               #   before_transition to: :delivery, do: :create_shipment_tax_charge!
               #   before_transition from: :delivery, do: :apply_free_shipping_promotions
               #   before_transition to: :delivery, do: :apply_unassigned_promotions
+              # end
+
+              # if states[:complete]
+                before_transition from: :complete, do: :ttt
               # end
 
               before_transition to: :resumed, do: :ensure_line_item_variants_are_not_discontinued

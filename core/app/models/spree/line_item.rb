@@ -108,6 +108,10 @@ module Spree
       Spree::Variant.unscoped { super }
     end
 
+    def verify_order_inventory
+      Spree::OrderInventory.new(order, self).verify(target_shipment, is_updated: true)
+    end
+
     private
 
     def ensure_valid_quantity
@@ -128,14 +132,12 @@ module Spree
     end
 
     def update_inventory
-      if (saved_changes? || target_shipment.present?) && order.has_checkout_step?('delivery')
+      if (saved_changes? || target_shipment.present?) && order.has_checkout_step?('payment')
         verify_order_inventory
       end
     end
 
-    def verify_order_inventory
-      Spree::OrderInventory.new(order, self).verify(target_shipment, is_updated: true)
-    end
+    
 
     def verify_order_inventory_before_destroy
       Spree::OrderInventory.new(order, self).verify(target_shipment)

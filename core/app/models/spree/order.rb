@@ -179,6 +179,10 @@ module Spree
       update_hooks.add(hook)
     end
 
+    def ttt
+      byebug
+    end
+
     # For compatiblity with Calculator::PriceSack
     def amount
       line_items.inject(0.0) { |sum, li| sum + li.amount }
@@ -346,6 +350,7 @@ module Spree
     # Finalizes an in progress order after checkout is complete.
     # Called after transition to complete state when payments will have been processed
     def finalize!
+      byebug
       # lock all adjustments (coupon promotions, etc.)
       all_adjustments.each(&:close)
 
@@ -670,6 +675,11 @@ module Spree
       unless line_items.present?
         errors.add(:base, Spree.t(:there_are_no_items_for_this_order)) && (return false)
       end
+    end
+
+    def mark_ordered_completed
+      self.completed_at = Time.current
+      self.save
     end
 
     def ensure_default_user

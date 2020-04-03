@@ -103,6 +103,8 @@ module Spree
         transition from: [:checkout], to: :invalid
       end
 
+      before_transition to: :completed, do: :ttt
+
       after_transition do |payment, transition|
         payment.state_changes.create!(
           previous_state: transition.from,
@@ -110,6 +112,13 @@ module Spree
           name: 'payment'
         )
       end
+
+    end
+
+    def ttt
+      # Spree::Order.transaction do
+      self.order.line_items.each {|line_item| line_item.verify_order_inventory }
+      # end
     end
 
     def money
